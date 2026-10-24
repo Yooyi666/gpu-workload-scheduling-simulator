@@ -1,0 +1,10 @@
+scenario,strategy,seeds,mean_compute_util_pct,sd_compute_util_pp,mean_p95_wait_ms,sd_p95_wait_ms,mean_makespan_ms
+high_arrival_rate,FIFO,10,79.8798,0.4058,9420.3000,682.4090,14588.5000
+high_arrival_rate,Priority,10,80.0928,0.4176,10347.2000,723.8502,14550.7000
+high_arrival_rate,Adaptive,10,85.9989,0.5098,7834.0000,700.3916,13552.6000
+baseline,FIFO,10,79.6281,0.3768,5181.7000,669.6004,14635.0000
+baseline,Priority,10,79.8960,0.3269,7436.5000,887.2423,14585.6000
+baseline,Adaptive,10,85.3429,0.4995,3948.4000,648.3883,13656.5000
+low_arrival_rate,FIFO,10,63.8664,2.9221,120.1000,38.4056,18243.2000
+low_arrival_rate,Priority,10,63.8358,2.9346,80.4000,18.8397,18252.1000
+low_arrival_rate,Adaptive,10,63.8841,2.9251,97.1000,25.6448,18238.2000

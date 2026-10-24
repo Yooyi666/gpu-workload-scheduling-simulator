@@ -1,0 +1,4 @@
+strategy,tasks,completed,makespan_ms,mean_wait_ms,p50_wait_ms,p95_wait_ms,p99_wait_ms,max_wait_ms,high_priority_p95_wait_ms,training_p95_wait_ms,inference_p95_wait_ms,evaluation_p95_wait_ms,compute_util_pct,memory_util_pct
+FIFO,1000,1000,13065,1967.0100,1682,3953,4016,4041,3954,3918,3965,3949,79.4225,49.5792
+Priority,1000,1000,12976,858.3130,27,5772,8719,10041,17,8258,145,3628,79.9673,49.9192
+Adaptive,1000,1000,12042,762.9270,315,2725,3000,3078,382,2946,391,2758,86.1697,53.7911
