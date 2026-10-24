@@ -1,0 +1,73 @@
+name: Build, Test and Reproduce
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  go-tests:
+    name: Go unit and race tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.3'
+      - name: Check tests
+        run: |
+          go vet ./...
+          go test ./... -count=1
+      - name: Run race detector
+        env:
+          CGO_ENABLED: '1'
+        run: go test -race ./... -count=1
+
+  benchmark:
+    name: Reproduce fixed-seed and paired-seed results
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.3'
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install analytics requirements
+        run: |
+          python -m pip install --only-binary=:all: -r requirements.txt
+      - name: Generate benchmark datasets
+        run: |
+          go run . -stage 5 -tasks 1000 -seed 20261024 -out ci_stage5
+          go run . -stage 6 -tasks 1000 -seed 20261024 -seeds 10 -out ci_stage6
+      - name: Verify headline results and chart artifacts
+        run: |
+          python analytics/plot_results.py --stage5 ci_stage5 --stage6 ci_stage6 --out ci_charts
+          python - <<'PYCODE'
+          import csv
+          import json
+          from pathlib import Path
+
+          rows = {row['strategy']: row for row in csv.DictReader(open('ci_stage5/summary.csv', newline=''))}
+          expected = {'FIFO': (3953, 13065), 'Priority': (5772, 12976), 'Adaptive': (2725, 12042)}
+          for name, (p95, makespan) in expected.items():
+              assert int(rows[name]['completed']) == 1000
+              assert int(rows[name]['p95_wait_ms']) == p95
+              assert int(rows[name]['makespan_ms']) == makespan
+          metrics = json.loads(Path('ci_charts/metrics.json').read_text())
+          assert metrics['task_count'] == 1000
+          assert metrics['stage6']['seed_count'] == 10
+          assert len(list(Path('ci_charts').glob('*.png'))) == 6
+          print('Benchmark and analytics validation PASS')
+          PYCODE
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build the complete image
+        run: docker build -t gpu-scheduling-simulator:ci .
