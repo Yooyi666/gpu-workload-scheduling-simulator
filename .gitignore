@@ -1,0 +1,32 @@
+# Python environments and caches
+.venv/
+.venv*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Go binary/build output
+*.exe
+*.test
+*.out
+coverage.out
+gpu-sim
+
+# Local benchmark outputs (re-generate via documented commands)
+stage5_results/
+stage6_results/
+stage8_results/
+stage8_analytics/
+stage5_regression/
+reference_results/
+
+# Local backups and downloads
+main_stage*_backup.txt
+main_backup.txt
+*.zip
+
+# Editor / local OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
